@@ -18,8 +18,6 @@
   void telaCalibracao();
   void telaConfiguracoes();
 
-
-
 //Define a orientação do touch futuramente
 #define TOUCH_ORIENTATION  PORTRAIT
 
