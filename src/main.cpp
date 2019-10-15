@@ -268,8 +268,23 @@ void telaConfiguracoes(){
   {  
     do{
       if(digitalRead(PIN_ENTER)){
-      if(selecionado==0)telaCalibracao();
-
+        switch (selecionado)
+        {
+        case 0:
+          telaCalibracao();
+          myGLCD.fillScr(VGA_WHITE);
+          sair = true;
+          selAlterada= false;
+          break;
+        case 1:
+          /* code */
+          break;
+        case 2:
+          /* code */
+          break;
+      
+      }
+      
       }
     }while(selAlterada);
     selAlterada= true;
@@ -282,7 +297,7 @@ void telaConfiguracoes(){
        myGLCD.setBackColor(VGA_WHITE);
        myGLCD.setColor(VGA_BLACK);
        myGLCD.setFont(BigFont);
-       myGLCD.print("Calibração", CENTER , 42); 
+       myGLCD.print("Calibracao", CENTER , 42); 
     }else{
         myGLCD.setColor(VGA_BLACK);
        myGLCD.drawRoundRect(30, 20, 290, 80);
@@ -378,9 +393,23 @@ void telaCalibracao(){
 
   while (sair)
   {
-    do{
-      
-      }while (selAlterada);
+    do{ 
+      if(digitalRead(PIN_ENTER)){
+        switch (selecionado)
+        {
+        case 0:
+          sair = false;
+          selAlterada=false;
+          break;
+        case 1:
+          /* code */
+          break;
+        case 2:
+          /* code */
+          break;
+        }
+      }
+    }while (selAlterada);
     selAlterada= true;
     if(selecionado == 0){
       myGLCD.setColor(VGA_BLACK);
