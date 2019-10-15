@@ -18,8 +18,6 @@
   void telaCalibracao();
   void telaConfiguracoes();
 
-
-
 //Define a orientação do touch futuramente
 #define TOUCH_ORIENTATION  PORTRAIT
 
@@ -270,8 +268,23 @@ void telaConfiguracoes(){
   {  
     do{
       if(digitalRead(PIN_ENTER)){
-      if(selecionado==0)telaCalibracao();
-
+        switch (selecionado)
+        {
+        case 0:
+          telaCalibracao();
+          myGLCD.fillScr(VGA_WHITE);
+          sair = true;
+          selAlterada= false;
+          break;
+        case 1:
+          /* code */
+          break;
+        case 2:
+          /* code */
+          break;
+      
+      }
+      
       }
     }while(selAlterada);
     selAlterada= true;
@@ -284,7 +297,7 @@ void telaConfiguracoes(){
        myGLCD.setBackColor(VGA_WHITE);
        myGLCD.setColor(VGA_BLACK);
        myGLCD.setFont(BigFont);
-       myGLCD.print("Calibração", CENTER , 42); 
+       myGLCD.print("Calibracao", CENTER , 42); 
     }else{
         myGLCD.setColor(VGA_BLACK);
        myGLCD.drawRoundRect(30, 20, 290, 80);
@@ -353,7 +366,7 @@ void telaCalibracao(){
   selecionado=0;
   sair = true;
   selAlterada= false;
- 
+
   myGLCD.setColor(VGA_BLACK);
   myGLCD.setBackColor(VGA_WHITE);
   myGLCD.setFont(BigFont);
@@ -377,108 +390,88 @@ void telaCalibracao(){
   myGLCD.setColor(VGA_BLACK);
   myGLCD.setFont(BigFont);
   myGLCD.print("Pa", 230 , 130);
- 
+
   while (sair)
   {
-     do{
-          
-     }while (selAlterada);
-     selAlterada= true;
-
+    do{ 
+      if(digitalRead(PIN_ENTER)){
+        switch (selecionado)
+        {
+        case 0:
+          sair = false;
+          selAlterada=false;
+          break;
+        case 1:
+          /* code */
+          break;
+        case 2:
+          /* code */
+          break;
+        }
+      }
+    }while (selAlterada);
+    selAlterada= true;
     if(selecionado == 0){
-    myGLCD.setColor(VGA_BLACK);
-    myGLCD.drawRoundRect(15, 180, 95, 220);
-    myGLCD.setColor(VGA_WHITE);
-    myGLCD.fillRoundRect(16, 181, 94, 219);
-    myGLCD.setBackColor(VGA_WHITE);
-    myGLCD.setColor(VGA_BLACK);
-    myGLCD.setFont(SmallFont);
-    myGLCD.print("Voltar", 33 , 195); 
-    }else {
-
       myGLCD.setColor(VGA_BLACK);
-       myGLCD.drawRoundRect(15, 180, 95, 220);
-       myGLCD.setColor(VGA_GRAY);
-       myGLCD.fillRoundRect(16, 181, 94, 219);
-       myGLCD.setBackColor(VGA_GRAY);
-       myGLCD.setColor(VGA_WHITE);
-       myGLCD.setFont(SmallFont);
-       myGLCD.print("Voltar", 33 , 195);
-    }   
-
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.drawRoundRect(119, 180, 199, 220);
-       myGLCD.setColor(VGA_GRAY);
-       myGLCD.fillRoundRect(120, 181, 198, 219);
-       myGLCD.setBackColor(VGA_GRAY);
-       myGLCD.setColor(VGA_WHITE);
-       myGLCD.setFont(SmallFont);
-       myGLCD.print("Calibr. 1", 125 , 195);
-
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.drawRoundRect(223, 180, 303, 220);
-       myGLCD.setColor(VGA_GRAY);
-       myGLCD.fillRoundRect(224, 181, 302, 219);
-       myGLCD.setBackColor(VGA_GRAY);
-       myGLCD.setColor(VGA_WHITE);
-       myGLCD.setFont(SmallFont);
-       myGLCD.print("Calibr. 2", 229 , 195);
-       
-        }
-
-
-       if(selecionado == 1){
-       
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.drawRoundRect(119, 180, 199, 220);
-       myGLCD.setColor(VGA_WHITE);
-       myGLCD.fillRoundRect(120, 181, 198, 219);
-       myGLCD.setBackColor(VGA_WHITE);
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.setFont(SmallFont);
-       myGLCD.print("Calibr. 1", 125 , 195);
-       }else{
-
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.drawRoundRect(119, 180, 199, 220);
-       myGLCD.setColor(VGA_GRAY);
-       myGLCD.fillRoundRect(120, 181, 198, 219);
-       myGLCD.setBackColor(VGA_GRAY);
-       myGLCD.setColor(VGA_WHITE);
-       myGLCD.setFont(SmallFont);
-       myGLCD.print("Calibr. 1", 125 , 195);
-       }      
-
-        if(selecionado == 2){       
- 
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.drawRoundRect(223, 180, 303, 220);
-       myGLCD.setColor(VGA_WHITE);
-       myGLCD.fillRoundRect(224, 181, 302, 219);
-       myGLCD.setBackColor(VGA_WHITE);
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.setFont(SmallFont);
-       myGLCD.print("Calibr. 2", 229 , 195);
-      }else{
-
-        
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.drawRoundRect(223, 180, 303, 220);
-       myGLCD.setColor(VGA_GRAY);
-       myGLCD.fillRoundRect(224, 181, 302, 219);
-       myGLCD.setBackColor(VGA_GRAY);
-       myGLCD.setColor(VGA_WHITE);
-       myGLCD.setFont(SmallFont);
-       myGLCD.print("Calibr. 2", 229 , 195);
-
-       
-        }
-
+      myGLCD.drawRoundRect(15, 180, 95, 220);
+      myGLCD.setColor(VGA_WHITE);
+      myGLCD.fillRoundRect(16, 181, 94, 219);
+      myGLCD.setBackColor(VGA_WHITE);
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.setFont(SmallFont);
+      myGLCD.print("Voltar", 33 , 195); 
+    }else{
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.drawRoundRect(15, 180, 95, 220);
+      myGLCD.setColor(VGA_GRAY);
+      myGLCD.fillRoundRect(16, 181, 94, 219);
+      myGLCD.setBackColor(VGA_GRAY);
+      myGLCD.setColor(VGA_WHITE);
+      myGLCD.setFont(SmallFont);
+      myGLCD.print("Voltar", 33 , 195);
+    } 
+    if(selecionado == 1){
+          
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.drawRoundRect(119, 180, 199, 220);
+      myGLCD.setColor(VGA_WHITE);
+      myGLCD.fillRoundRect(120, 181, 198, 219);
+      myGLCD.setBackColor(VGA_WHITE);
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.setFont(SmallFont);
+      myGLCD.print("Calibr. 1", 125 , 195);
+    }else{
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.drawRoundRect(119, 180, 199, 220);
+      myGLCD.setColor(VGA_GRAY);
+      myGLCD.fillRoundRect(120, 181, 198, 219);
+      myGLCD.setBackColor(VGA_GRAY);
+      myGLCD.setColor(VGA_WHITE);
+      myGLCD.setFont(SmallFont);
+      myGLCD.print("Calibr. 1", 125 , 195);
+    }
+    if(selecionado == 2){ 
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.drawRoundRect(223, 180, 303, 220);
+      myGLCD.setColor(VGA_WHITE);
+      myGLCD.fillRoundRect(224, 181, 302, 219);
+      myGLCD.setBackColor(VGA_WHITE);
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.setFont(SmallFont);
+      myGLCD.print("Calibr. 2", 229 , 195);
+    }else{        
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.drawRoundRect(223, 180, 303, 220);
+      myGLCD.setColor(VGA_GRAY);
+      myGLCD.fillRoundRect(224, 181, 302, 219);
+      myGLCD.setBackColor(VGA_GRAY);
+      myGLCD.setColor(VGA_WHITE);
+      myGLCD.setFont(SmallFont);
+      myGLCD.print("Calibr. 2", 229 , 195);
+    }
   }  
+}
 
-
-
-  
 
 void telaManual(){
   myGLCD.fillScr(VGA_WHITE);
