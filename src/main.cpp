@@ -1,9 +1,9 @@
 //Blibliotecas
-  //#include <Arduino.h> 
+  #include <Arduino.h> 
   #include <EEPROM.h> //Blibioteca memoria EEPROM 4Kb
   #include <memorysaver.h> //Blbioteca UTFT LCD SD/CARD 
   #include <UTFT.h>
-  //#include <URTouch.h>
+  //#include <URTouch.h>'
 
 //Parametrizacao de funcoes 
   void primeiraTela();
@@ -404,7 +404,7 @@ void telaCalibracao(){
        myGLCD.setColor(VGA_WHITE);
        myGLCD.setFont(SmallFont);
        myGLCD.print("Voltar", 33 , 195);
-    }
+    }   
 
        myGLCD.setColor(VGA_BLACK);
        myGLCD.drawRoundRect(119, 180, 199, 220);
