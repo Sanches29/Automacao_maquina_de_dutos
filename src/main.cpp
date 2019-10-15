@@ -3,21 +3,18 @@
   #include <EEPROM.h> //Blibioteca memoria EEPROM 4Kb
   #include <memorysaver.h> //Blbioteca UTFT LCD SD/CARD 
   #include <UTFT.h>
-  //#include <URTouch.h>'
-
 //Parametrizacao de funcoes 
   void primeiraTela();
   void telaManual();
+  void telaCalibracao();
+  void telaConfiguracoes();
   void oversampling();
   void selecaobocal();
-  void titulos(String sup,String inf);
+  void titulos(String sup,String inf);  
+  void selecao(int ns);  
   float pressao(float ovsa, int zero, float constante);
   float vazao(float ovsa, int zero, float costante);
   float vazao(float ovsa, int zero, float constante, float bocal);
-  void selecao(int ns);
-  void telaCalibracao();
-  void telaConfiguracoes();
-
 //Define a orientação do touch futuramente
 #define TOUCH_ORIENTATION  PORTRAIT
 
@@ -394,6 +391,12 @@ void telaCalibracao(){
   while (sair)
   {
     do{ 
+      myGLCD.setBackColor(VGA_WHITE);
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.setFont(BigFont);
+      myGLCD.printNumF(pressao(oversampling1, zero, ftrScala1), 2, 100 , 57);
+      myGLCD.printNumF(pressao(oversampling2, zero2, ftrScala2), 2, 100 , 130);
+
       if(digitalRead(PIN_ENTER)){
         switch (selecionado)
         {
