@@ -3,6 +3,7 @@
   #include <EEPROM.h> //Blibioteca memoria EEPROM 4Kb
   #include <memorysaver.h> //Blbioteca UTFT LCD SD/CARD 
   #include <UTFT.h>
+  #include "EEPROMAnything.h"
 //Parametrizacao de funcoes 
   void primeiraTela();
   void telaManual();
@@ -135,6 +136,28 @@ void loop() {
   titulos(tituloSup, tituloInf);
   myGLCD.drawBitmap(50,100,200,67,vectus);
   delay(2000); 
+  
+  EEPROM_readAnything(0, check);
+  if(check == TRUE){
+	  EEPROM_updateAnything(1, ftrScala1);
+      EEPROM_updateAnything(5, ftrScala2);
+      EEPROM_updateAnything(9, zero1);
+      EEPROM_updateAnything(13, zero2);
+  }
+  else if(check == FALSE){
+	  myGLCD.fillScr(VGA_WHITE);
+      titulos(tituloSup, tituloInf);
+	  
+	  myGLCD.setColor(VGA_BLACK);
+      myGLCD.setBackColor(VGA_WHITE);
+	  myGLCD.setFont(BigFont);
+	  
+      myGLCD.print("Não há configuracoes iniciais.", CENTER ,100);
+	  myGLCD.print("Favor configurar o equipamento.", CENTER ,200);
+	  delay(3000);
+  }
+  
+  
   myGLCD.fillScr(VGA_WHITE);
   titulos("selecione", tituloInf);
   sair=true;
