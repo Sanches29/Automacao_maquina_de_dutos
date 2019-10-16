@@ -56,6 +56,7 @@ extern unsigned int vectus[0x3458];
   String tituloInf = "www.vectus.com.br";
 //variaveis Globais
   
+  bool check;  
   float oversampling1;
   float oversampling2;
   float fatorBocal[3] = {0.2161 , 0.7807, 2.9070}; 
