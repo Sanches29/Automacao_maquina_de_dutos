@@ -12,9 +12,9 @@
   void selecaobocal();
   void titulos(String sup,String inf);  
   void selecao(int ns);  
-  float pressao(float ovsa, int zero, float constante);
-  float vazao(float ovsa, int zero, float costante);
-  float vazao(float ovsa, int zero, float constante, float bocal);
+  float pressao(float ovsa_p, int zero_p, float constante_p);
+  float vazao(float ovsa_v, int zero_v, float constante_v, float bocal_v);
+
 //Define a orientação do touch futuramente
 #define TOUCH_ORIENTATION  PORTRAIT
 
@@ -492,9 +492,9 @@ void telaManual(){
         myGLCD.setBackColor(VGA_WHITE);
         myGLCD.setColor(VGA_BLACK);
         myGLCD.print("       ", 70 , 47);
-        myGLCD.printNumF(pressao(oversampling2, 10, ftrScala1),2, 70 , 47);
+        myGLCD.printNumF(pressao(oversampling2, zero, ftrScala1),2, 70 , 47);
         myGLCD.print("       ", 70 , 132);
-        myGLCD.printNumF(vazao(oversampling2,63,ftrScala2,fatorBocal[tamBocal]),2,70,132);
+        myGLCD.printNumF(vazao(oversampling2,zero2,ftrScala2,fatorBocal[tamBocal]),2,70,132);
 
 
 
@@ -703,21 +703,20 @@ void titulos(String sup,String inf){
   myGLCD.setColor(255,255,0);
   myGLCD.print(inferior, CENTER, 227);
 }
- float pressao(float ovsa, int zero, float constante){
-
-  float p = 0.0;
-  ovsa -= zero;
-  p = ovsa * constante;
-  return p;  
+ float pressao(float ovsa_p, int zero_p, float constante_p){
+  float p_p = 0.0;
+  ovsa_p -= zero_p;
+  p_p = ovsa_p * constante_p;
+  return p_p;  
   }
 
-float vazao(float ovsa, int zero, float constante, float bocal){
-  float p =0.0;
+float vazao(float ovsa_v, int zero_v, float constante_v, float bocal_v){
+  float p_v =0.0;
   float v =0.0;
-  ovsa -= zero;
-  p = ovsa * constante;
-  v = sqrt(p);
-  v *= bocal;
+  ovsa_v -= zero;
+  p_v = ovsa_v * constante_v;
+  v = sqrt(p_v);
+  v *= bocal_v;
   return v;
 }
 void selecao(int ns){
