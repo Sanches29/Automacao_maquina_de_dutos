@@ -12,9 +12,9 @@
   void selecaobocal();
   void titulos(String sup,String inf);  
   void selecao(int ns);  
-  float pressao(float ovsa, int zero, float constante);
-  float vazao(float ovsa, int zero, float costante);
-  float vazao(float ovsa, int zero, float constante, float bocal);
+  float pressao(float ovsa_p, int zero_p, float constante_p);
+  float vazao(float ovsa_v, int zero_v, float constante_v, float bocal_v);
+
 //Define a orientação do touch futuramente
 #define TOUCH_ORIENTATION  PORTRAIT
 
@@ -706,8 +706,8 @@ void titulos(String sup,String inf){
  float pressao(float ovsa_p, int zero_p, float constante_p){
   float p_p = 0.0;
   ovsa_p -= zero_p;
-  p = ovsa_p * constante_p;
-  return p;  
+  p_p = ovsa_p * constante_p;
+  return p_p;  
   }
 
 float vazao(float ovsa_v, int zero_v, float constante_v, float bocal_v){
@@ -715,7 +715,7 @@ float vazao(float ovsa_v, int zero_v, float constante_v, float bocal_v){
   float v =0.0;
   ovsa_v -= zero;
   p_v = ovsa_v * constante_v;
-  v = sqrt(p);
+  v = sqrt(p_v);
   v *= bocal_v;
   return v;
 }
