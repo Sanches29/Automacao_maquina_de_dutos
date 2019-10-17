@@ -65,6 +65,9 @@ extern unsigned int vectus[0x3458];
   float ftrScala1 = 0.15788165091994032819492789656887;
   float ftrScala2 = 0.15;
   float zero, zero2 = 0;
+  int counterCycle = -1;
+  float storeReads1 [10] ={};
+  float storeReads2 [10] = {};
 
   
   //Estouro do timers
@@ -588,9 +591,14 @@ void oversampling(){
     oversampling1 = float(amostragem1);
     oversampling2 = float(amostragem2);
     counterAmostragem = 256;//reinicia o contador 
+    if(counterCycle>=0)counterCycle--;
+    if(counterCycle>=0)storeReads1[counterCycle] = oversampling1;
+    if(counterCycle>=0)storeReads2[counterCycle] = oversampling2;
     //zera as amostragem
     amostragem1 = 0; 
     amostragem2 = 0;
+
+    
     }
 }
 void selecaobocal(){
