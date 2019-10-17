@@ -64,14 +64,10 @@ extern unsigned int vectus[0x3458];
   bool sair = true;
   float ftrScala1 = 0.15788165091994032819492789656887;
   float ftrScala2 = 0.15;
-<<<<<<< HEAD
   float zero1, zero2 = 0;
-=======
-  float zero, zero2 = 0;
   int counterCycle = -1;
   float storeReads1 [10] ={};
   float storeReads2 [10] = {};
->>>>>>> Oversampling
 
   
   //Estouro do timers
