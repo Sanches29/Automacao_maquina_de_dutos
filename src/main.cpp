@@ -64,7 +64,7 @@ extern unsigned int vectus[0x3458];
   bool sair = true;
   float ftrScala1 = 0.15788165091994032819492789656887;
   float ftrScala2 = 0.15;
-  float zero, zero2 = 0;
+  float zero1, zero2 = 0;
 
   
   //Estouro do timers
@@ -394,7 +394,7 @@ void telaCalibracao(){
       myGLCD.setBackColor(VGA_WHITE);
       myGLCD.setColor(VGA_BLACK);
       myGLCD.setFont(BigFont);
-      myGLCD.printNumF(pressao(oversampling1, zero, ftrScala1), 2, 100 , 57);
+      myGLCD.printNumF(pressao(oversampling1, zero1, ftrScala1), 2, 100 , 57);
       myGLCD.printNumF(pressao(oversampling2, zero2, ftrScala2), 2, 100 , 130);
 
       if(digitalRead(PIN_ENTER)){
@@ -492,7 +492,7 @@ void telaManual(){
         myGLCD.setBackColor(VGA_WHITE);
         myGLCD.setColor(VGA_BLACK);
         myGLCD.print("       ", 70 , 47);
-        myGLCD.printNumF(pressao(oversampling2, zero, ftrScala1),2, 70 , 47);
+        myGLCD.printNumF(pressao(oversampling1, zero1, ftrScala1),2, 70 , 47);
         myGLCD.print("       ", 70 , 132);
         myGLCD.printNumF(vazao(oversampling2,zero2,ftrScala2,fatorBocal[tamBocal]),2,70,132);
 
@@ -713,7 +713,7 @@ void titulos(String sup,String inf){
 float vazao(float ovsa_v, int zero_v, float constante_v, float bocal_v){
   float p_v =0.0;
   float v =0.0;
-  ovsa_v -= zero;
+  ovsa_v -= zero1;
   p_v = ovsa_v * constante_v;
   v = sqrt(p_v);
   v *= bocal_v;
