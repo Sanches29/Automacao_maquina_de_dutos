@@ -1,6 +1,6 @@
 //Blibliotecas
   #include <Arduino.h> 
-  #include <EEPROM.h> //Blibioteca memoria EEPROM 4Kb
+  
   #include <memorysaver.h> //Blbioteca UTFT LCD SD/CARD 
   #include <UTFT.h>
   #include "EEPROMAnything.h"
@@ -22,7 +22,7 @@
 
 //-------Pino dos transmissores 
 #define TRANSMISSOR1   A5
-#define TRANSMISSOR2   A15
+#define TRANSMISSOR2   A7
 //-------Pino dos botões
 #define PIN_ENTER     54  
 #define PIN_BAIXO     55 
@@ -51,7 +51,7 @@ extern unsigned int vectus[0x3458];
 //variaveis da função overS
   unsigned long amostragem1 = 0;
   unsigned long amostragem2 = 0; 
-  unsigned int counterAmostragem = 256;
+  unsigned int counterAmostragem = 512;
 //variaveis da função overS  
   String tituloSup = "VecTus";
   String tituloInf = "www.vectus.com.br";
@@ -67,18 +67,20 @@ extern unsigned int vectus[0x3458];
   bool sair = true;
   float ftrScala1 = 0.15679012345679;
   float ftrScala2 = 0.15;
-  float zero1 = 14; 
-  float zero2 = 0;
+  float zero1 = 11; 
+  float zero2 = 15;
   int counterCycle = -1;
   float storeReads1 [10] ={};
   float storeReads2 [10] = {};
   float lastPressure, lastFlow = 0;
+  bool inversao = true;
 
+  const unsigned char PS_128 = (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 
   
   //Estouro do timers
 ISR(TIMER2_OVF_vect){
-  TCNT2=194; //Reinicializa o Timer2
+  TCNT2=225; //Reinicializa o Timer2
     oversampling();     
 }
 ISR(TIMER1_OVF_vect){
@@ -101,7 +103,17 @@ void setup() {
   myGLCD.clrScr();
  //Cor do backgroud padrao de inicialização 
   myGLCD.fillScr(VGA_WHITE);
-    
+  // ***************************************************************************
+  //Configuração conversor ADC
+  //Recomendado trabalhar entre 50kHz a 200kHz
+  //Maior a frequência, menor a precisão e vice-versa.
+  // ***************************************************************************
+  
+  ADCSRA &= ~PS_128;  //limpa configuração da biblioteca do arduino
+  ADCSRA |= PS_128; // 128 prescaler 16Mhhz/128 = 125kHz
+  //ADCSRA |= PS_64; // 64 prescaler 16Mhhz/64 = 250kHz
+  //ADCSRA |= PS_32; // 32 prescaler 16Mhhz/64 = 500kHz
+  //ADCSRA |= PS_16; // 16 prescaler 16Mhhz/64 = 1MHz
   // ***************************************************************************
   //Estouro = timer *prescaler * ciclo de maquina   = =(254-)* 1024 * 59,6E9
   //ciclo de maquina = 1/16MHz = 59,6E9
@@ -618,25 +630,27 @@ void telaManual(){
 }
 void oversampling(){
   // Faz a conversão de 256 amostras do sinal analogico
-  amostragem1 += analogRead(TRANSMISSOR1); 
-  amostragem2 += analogRead(TRANSMISSOR2);
+  if(inversao)amostragem1 += analogRead(TRANSMISSOR1); 
+  if(!inversao)amostragem2 += analogRead(TRANSMISSOR2);
+
   counterAmostragem--;
   
   if(counterAmostragem <= 0){
     // divide as amostras por 16
-    amostragem1 >>= 4;
-    amostragem2 >>= 4;
+    if(inversao)amostragem1 >>= 4;
+    if(!inversao)amostragem2 >>= 4;
     //retira o valor para variavel global
-    oversampling1 = float(amostragem1);
-    oversampling2 = float(amostragem2);
+    if(inversao)oversampling1 = float(amostragem1);
+    if(!inversao)oversampling2 = float(amostragem2);
     counterAmostragem = 256;//reinicia o contador 
     if(counterCycle>=0)counterCycle--;
     if(counterCycle>=0)storeReads1[counterCycle] = oversampling1;
     if(counterCycle>=0)storeReads2[counterCycle] = oversampling2;
     //zera as amostragem
-    amostragem1 = 0; 
-    amostragem2 = 0;
+    if(inversao)amostragem1 = 0; 
+    if(!inversao)amostragem2 = 0;
 
+    inversao = !inversao;
     
     }
 }
