@@ -11,6 +11,7 @@
   void telaConfiguracoes();
   void oversampling();
   void selecaobocal();
+  void newCalibrcao(int num_trasmissor);
   void titulos(String sup,String inf);  
   void selecao(int ns);  
   float pressao(float ovsa_p, int zero_p, float constante_p);
@@ -21,7 +22,7 @@
 
 //-------Pino dos transmissores 
 #define TRANSMISSOR1   A5
-#define TRANSMISSOR2   A7
+#define TRANSMISSOR2   A15
 //-------Pino dos botões
 #define PIN_ENTER     54  
 #define PIN_BAIXO     55 
@@ -64,9 +65,15 @@ extern unsigned int vectus[0x3458];
   int cont,nSelecoes, selecionado, ultSelecionado, tamBocal = 0;
   bool selAlterada= false;
   bool sair = true;
-  float ftrScala1 = 0.15788165091994032819492789656887;
+  float ftrScala1 = 0.15679012345679;
   float ftrScala2 = 0.15;
-  float zero1, zero2 = 0;
+  float zero1 = 14; 
+  float zero2 = 0;
+  int counterCycle = -1;
+  float storeReads1 [10] ={};
+  float storeReads2 [10] = {};
+  float lastPressure, lastFlow = 0;
+
 
   
   //Estouro do timers
@@ -388,38 +395,41 @@ void telaCalibracao(){
   sair = true;
   selAlterada= false;
 
-  myGLCD.setColor(VGA_BLACK);
-  myGLCD.setBackColor(VGA_WHITE);
-  myGLCD.setFont(BigFont);
-  myGLCD.print("Transmissor 1", CENTER , 21);
-  myGLCD.drawRoundRect(35, 40, 290, 90);
-  myGLCD.setColor(VGA_WHITE);
-  myGLCD.fillRoundRect(36, 41, 289, 89);
-  myGLCD.setBackColor(VGA_WHITE);
-  myGLCD.setColor(VGA_BLACK);
-  myGLCD.setFont(BigFont);
-  myGLCD.print("Pa", 230 , 57);
-
-  myGLCD.setColor(VGA_BLACK);
-  myGLCD.setBackColor(VGA_WHITE);
-  myGLCD.setFont(BigFont);
-  myGLCD.print("Transmissor 2", CENTER , 95);
-  myGLCD.drawRoundRect(35, 113, 290, 163);
-  myGLCD.setColor(VGA_WHITE);
-  myGLCD.fillRoundRect(36, 114, 289, 162);
-  myGLCD.setBackColor(VGA_WHITE);
-  myGLCD.setColor(VGA_BLACK);
-  myGLCD.setFont(BigFont);
-  myGLCD.print("Pa", 230 , 130);
+  
 
   while (sair)
   {
+    myGLCD.setColor(VGA_BLACK);
+    myGLCD.setBackColor(VGA_WHITE);
+    myGLCD.setFont(BigFont);
+    myGLCD.print("Transmissor 1", CENTER , 21);
+    myGLCD.drawRoundRect(35, 40, 290, 90);
+    myGLCD.setColor(VGA_WHITE);
+    myGLCD.fillRoundRect(36, 41, 289, 89);
+    myGLCD.setBackColor(VGA_WHITE);
+    myGLCD.setColor(VGA_BLACK);
+    myGLCD.setFont(BigFont);
+    myGLCD.print("Pa", 230 , 57);
+
+    myGLCD.setColor(VGA_BLACK);
+    myGLCD.setBackColor(VGA_WHITE);
+    myGLCD.setFont(BigFont);
+    myGLCD.print("Transmissor 2", CENTER , 95);
+    myGLCD.drawRoundRect(35, 113, 290, 163);
+    myGLCD.setColor(VGA_WHITE);
+    myGLCD.fillRoundRect(36, 114, 289, 162);
+    myGLCD.setBackColor(VGA_WHITE);
+    myGLCD.setColor(VGA_BLACK);
+    myGLCD.setFont(BigFont);
+    myGLCD.print("Pa", 230 , 130);
     do{ 
       myGLCD.setBackColor(VGA_WHITE);
       myGLCD.setColor(VGA_BLACK);
       myGLCD.setFont(BigFont);
-      myGLCD.printNumF(pressao(oversampling1, zero1, ftrScala1), 2, 100 , 57);
-      myGLCD.printNumF(pressao(oversampling2, zero2, ftrScala2), 2, 100 , 130);
+      //myGLCD.print("       ",100, 57);
+      //myGLCD.print("       ",100, 130);
+      myGLCD.printNumF(pressao(oversampling1, zero1, ftrScala1), 1, 100 , 57,',');
+      myGLCD.printNumF(pressao(oversampling2, zero2, ftrScala2), 1, 100 , 130);
 
       if(digitalRead(PIN_ENTER)){
         switch (selecionado)
@@ -429,10 +439,18 @@ void telaCalibracao(){
           selAlterada=false;
           break;
         case 1:
-          /* code */
+          newCalibrcao(1);
+          selAlterada =false;
+          sair = true;
+          myGLCD.fillScr(VGA_WHITE);
+          titulos("Calibracao", tituloInf);
           break;
         case 2:
-          /* code */
+          newCalibrcao(2);
+          selAlterada =false;
+          sair = true;
+          myGLCD.fillScr(VGA_WHITE);
+          titulos("Calibracao", tituloInf);
           break;
         }
       }
@@ -516,7 +534,7 @@ void telaManual(){
         myGLCD.setBackColor(VGA_WHITE);
         myGLCD.setColor(VGA_BLACK);
         myGLCD.print("       ", 70 , 47);
-        myGLCD.printNumF(pressao(oversampling1, zero1, ftrScala1),2, 70 , 47);
+        myGLCD.printNumF(pressao(oversampling1,zero1,ftrScala1),2, 70 , 47);
         myGLCD.print("       ", 70 , 132);
         myGLCD.printNumF(vazao(oversampling2,zero2,ftrScala2,fatorBocal[tamBocal]),2,70,132);
 
@@ -612,9 +630,14 @@ void oversampling(){
     oversampling1 = float(amostragem1);
     oversampling2 = float(amostragem2);
     counterAmostragem = 256;//reinicia o contador 
+    if(counterCycle>=0)counterCycle--;
+    if(counterCycle>=0)storeReads1[counterCycle] = oversampling1;
+    if(counterCycle>=0)storeReads2[counterCycle] = oversampling2;
     //zera as amostragem
     amostragem1 = 0; 
     amostragem2 = 0;
+
+    
     }
 }
 void selecaobocal(){
@@ -731,6 +754,7 @@ void titulos(String sup,String inf){
   float p_p = 0.0;
   ovsa_p -= zero_p;
   p_p = ovsa_p * constante_p;
+  
   return p_p;  
   }
 
@@ -760,3 +784,173 @@ void selecao(int ns){
   else if(selecionado>ns)selecionado=0;
 
 }
+void newCalibrcao(int num_trasmissor){
+  while(sair){
+    float media = 0;
+    myGLCD.fillScr(VGA_WHITE);
+    titulos("Nova calibracao", tituloInf);
+    
+    nSelecoes=2;
+    selecionado=0;
+    sair = true;
+    bool sair2 = true;
+    selAlterada= false;
+    myGLCD.setColor(VGA_BLACK);
+    myGLCD.setBackColor(VGA_WHITE);
+    myGLCD.setFont(BigFont);
+    myGLCD.print("Desconecte a", CENTER , 60);
+    myGLCD.print("mangueira da tomada", CENTER , 80);
+    myGLCD.print("de presao e", CENTER , 100);
+    myGLCD.print("pressione enter", CENTER , 120);
+    
+    do
+    {
+      myGLCD.print("         ", 2, CENTER , 190);
+      if(num_trasmissor==1){
+        myGLCD.printNumF(pressao(oversampling1, zero1, ftrScala1), 2, CENTER , 170);
+      if(pressao(oversampling1, zero1, ftrScala1)>100){
+        myGLCD.print("Pressao muito alta", CENTER , 190);
+      }else{
+        myGLCD.print("                   ", CENTER , 190);
+      }
+      }
+      if(num_trasmissor==2){
+        myGLCD.printNumF(pressao(oversampling2, zero2, ftrScala2), 2, CENTER , 170);
+        if(pressao(oversampling2, zero2, ftrScala2)>100){
+          myGLCD.print("Retire a mangueira", CENTER , 190);
+        }else{
+          myGLCD.print("                   ", CENTER , 190);
+        }
+      }
+    
+    } while (!digitalRead(PIN_ENTER));
+    myGLCD.fillScr(VGA_WHITE);
+    titulos("Nova calibracao", tituloInf);
+    counterCycle=10;
+    myGLCD.setColor(VGA_BLACK);
+    myGLCD.setBackColor(VGA_WHITE);
+    myGLCD.setFont(BigFont);
+    myGLCD.print("Ajustando zero.", CENTER , 60);  
+    myGLCD.print("Aguarde", CENTER , 100);  
+    do
+    {
+      myGLCD.print("   ", CENTER , 80);
+      myGLCD.print(String(counterCycle), CENTER , 80); 
+
+    } while (counterCycle>=0);  
+    for (int i = 0; i < 10; i++)
+    {
+      if(num_trasmissor ==1) media += storeReads1[i];
+      if(num_trasmissor ==2) media += storeReads2[i];
+    }
+    media /= 10;
+    if(num_trasmissor ==1) zero1 = media;
+    if(num_trasmissor ==2) zero2 = media; 
+    myGLCD.fillScr(VGA_WHITE);
+    titulos("Nova calibracao", tituloInf);
+    myGLCD.setFont(BigFont);
+    myGLCD.setColor(VGA_BLACK);
+    myGLCD.setBackColor(VGA_WHITE);
+    myGLCD.setFont(BigFont);
+    myGLCD.print("Conecte a mangueira", CENTER , 60);
+    myGLCD.print("do micromanometro", CENTER , 80);
+    myGLCD.print("na tomada, ", CENTER , 100);
+    myGLCD.print("pressione ENTER ", CENTER , 120);
+    myGLCD.print("apos atingir 2540Pa", CENTER , 140);
+    do
+    {
+    
+    
+    } while (!digitalRead(PIN_ENTER));
+    if(num_trasmissor==1)ftrScala1= 2540/oversampling1;
+    else if(num_trasmissor==2)ftrScala2= 2540/oversampling2;
+    myGLCD.fillScr(VGA_WHITE);
+    titulos("Nova calibracao", tituloInf);
+    myGLCD.setFont(BigFont);
+    myGLCD.setColor(VGA_BLACK);
+    myGLCD.setBackColor(VGA_WHITE);
+    myGLCD.setFont(BigFont);
+    myGLCD.print("Confira pressao", CENTER , 60);
+    myGLCD.print("com micromanometro", CENTER , 80);
+    myGLCD.print("em pontos que  ", CENTER , 100);
+    myGLCD.print("desejar ", CENTER , 120);
+    
+    nSelecoes = 1;
+    while (sair2)
+    { 
+      do{
+        myGLCD.setColor(VGA_BLACK);
+        myGLCD.setBackColor(VGA_WHITE);
+        myGLCD.setFont(BigFont);
+        myGLCD.print("        ", CENTER , 160);
+        if(num_trasmissor==1)myGLCD.printNumF(pressao(oversampling1,zero1,ftrScala1),2,CENTER , 160);
+        if(num_trasmissor==2)myGLCD.printNumF(pressao(oversampling2,zero2,ftrScala2),2,CENTER , 160);
+        if(digitalRead(PIN_ENTER)){
+          switch (selecionado)
+          {
+          case 0:
+            sair2 =false; 
+            selAlterada=false;
+            zero1 =0;
+            zero2 =0;
+            ftrScala1 =1;
+            ftrScala2 =1;
+            break;
+          case 1:
+            sair2 = false;
+            sair = false;
+            selAlterada= false;
+            nSelecoes = 2;
+            selecionado= 0;
+            
+            break;       
+          }
+        }
+      }while(selAlterada);
+      
+      selAlterada=true;
+      if(selecionado == 0){
+
+        myGLCD.setColor(VGA_BLACK);
+        myGLCD.drawRoundRect(30, 185, 130, 220);
+        myGLCD.setColor(VGA_WHITE);
+        myGLCD.fillRoundRect(31, 186, 129, 219);
+        myGLCD.setFont(SmallFont);
+        myGLCD.setBackColor(VGA_WHITE);
+        myGLCD.setColor(VGA_BLACK);
+        myGLCD.print("Refazer", 58 , 198);
+
+        myGLCD.setColor(VGA_BLACK);
+        myGLCD.drawRoundRect(190, 185, 290, 220);
+        myGLCD.setColor(VGA_GRAY);
+        myGLCD.fillRoundRect(191, 186, 289, 219);
+        myGLCD.setFont(SmallFont);
+        myGLCD.setBackColor(VGA_GRAY);
+        myGLCD.setColor(VGA_WHITE);
+        myGLCD.print("Gravar", 222 , 198);
+      }
+
+      else{
+        myGLCD.setColor(VGA_BLACK);
+        myGLCD.drawRoundRect(30, 185, 130, 220);
+        myGLCD.setColor(VGA_GRAY);
+        myGLCD.fillRoundRect(31, 186, 129, 219);
+        myGLCD.setFont(SmallFont);
+        myGLCD.setBackColor(VGA_GRAY);
+        myGLCD.setColor(VGA_WHITE);
+        myGLCD.print("Refazer", 58 , 198);
+
+        myGLCD.setColor(VGA_BLACK);
+        myGLCD.drawRoundRect(190, 185, 290, 220);
+        myGLCD.setColor(VGA_WHITE);
+        myGLCD.fillRoundRect(191, 186, 289, 219);
+        myGLCD.setFont(SmallFont);
+        myGLCD.setBackColor(VGA_WHITE);
+        myGLCD.setColor(VGA_BLACK);
+        myGLCD.print("Gravar", 222, 198);
+      }
+    
+    }
+  }
+}
+
