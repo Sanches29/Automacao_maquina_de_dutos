@@ -21,7 +21,7 @@
 
 //-------Pino dos transmissores 
 #define TRANSMISSOR1   A5
-#define TRANSMISSOR2   A15
+#define TRANSMISSOR2   A7
 //-------Pino dos botões
 #define PIN_ENTER     54  
 #define PIN_BAIXO     55 
@@ -50,7 +50,7 @@ extern unsigned int vectus[0x3458];
 //variaveis da função overS
   unsigned long amostragem1 = 0;
   unsigned long amostragem2 = 0; 
-  unsigned int counterAmostragem = 256;
+  unsigned int counterAmostragem = 512;
 //variaveis da função overS  
   String tituloSup = "VecTus";
   String tituloInf = "www.vectus.com.br";
@@ -65,18 +65,19 @@ extern unsigned int vectus[0x3458];
   bool sair = true;
   float ftrScala1 = 0.15679012345679;
   float ftrScala2 = 0.15;
-  float zero1 = 14; 
-  float zero2 = 0;
+  float zero1 = 15; 
+  float zero2 = 1;
   int counterCycle = -1;
   float storeReads1 [10] ={};
   float storeReads2 [10] = {};
   float lastPressure, lastFlow = 0;
+  bool inversao = true;
 
 
   
   //Estouro do timers
 ISR(TIMER2_OVF_vect){
-  TCNT2=194; //Reinicializa o Timer2
+  TCNT2=225; //Reinicializa o Timer2
     oversampling();     
 }
 ISR(TIMER1_OVF_vect){
@@ -510,9 +511,9 @@ void telaManual(){
         myGLCD.setBackColor(VGA_WHITE);
         myGLCD.setColor(VGA_BLACK);
         myGLCD.print("       ", 70 , 47);
-        myGLCD.printNumF(pressao(oversampling1,zero1,ftrScala1),2, 70 , 47);
+        myGLCD.printNumF(oversampling1,2, 70 , 47);
         myGLCD.print("       ", 70 , 132);
-        myGLCD.printNumF(vazao(oversampling2,zero2,ftrScala2,fatorBocal[tamBocal]),2,70,132);
+        myGLCD.printNumF(oversampling2,2,70,132);
 
 
 
@@ -594,8 +595,9 @@ void telaManual(){
 }
 void oversampling(){
   // Faz a conversão de 256 amostras do sinal analogico
-  amostragem1 += analogRead(TRANSMISSOR1); 
-  amostragem2 += analogRead(TRANSMISSOR2);
+  if(inversao)amostragem1 += analogRead(TRANSMISSOR1); 
+  if(!inversao)amostragem2 += analogRead(TRANSMISSOR2);
+inversao = !inversao;
   counterAmostragem--;
   
   if(counterAmostragem <= 0){
@@ -605,7 +607,7 @@ void oversampling(){
     //retira o valor para variavel global
     oversampling1 = float(amostragem1);
     oversampling2 = float(amostragem2);
-    counterAmostragem = 256;//reinicia o contador 
+    counterAmostragem = 512;//reinicia o contador 
     if(counterCycle>=0)counterCycle--;
     if(counterCycle>=0)storeReads1[counterCycle] = oversampling1;
     if(counterCycle>=0)storeReads2[counterCycle] = oversampling2;
