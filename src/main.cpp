@@ -159,7 +159,6 @@ void loop() {
   delay(2000); 
   
   
-  
   while (true)
   {
   myGLCD.fillScr(VGA_WHITE);
