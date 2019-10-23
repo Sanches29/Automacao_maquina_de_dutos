@@ -1,6 +1,6 @@
 //Blibliotecas
   #include <Arduino.h> 
-  #include <EEPROM.h> //Blibioteca memoria EEPROM 4Kb
+  
   #include <memorysaver.h> //Blbioteca UTFT LCD SD/CARD 
   #include <UTFT.h>
 //Parametrizacao de funcoes 
@@ -21,7 +21,7 @@
 
 //-------Pino dos transmissores 
 #define TRANSMISSOR1   A5
-#define TRANSMISSOR2   A15
+#define TRANSMISSOR2   A7
 //-------Pino dos botões
 #define PIN_ENTER     54  
 #define PIN_BAIXO     55 
@@ -50,7 +50,7 @@ extern unsigned int vectus[0x3458];
 //variaveis da função overS
   unsigned long amostragem1 = 0;
   unsigned long amostragem2 = 0; 
-  unsigned int counterAmostragem = 256;
+  unsigned int counterAmostragem = 512;
 //variaveis da função overS  
   String tituloSup = "VecTus";
   String tituloInf = "www.vectus.com.br";
@@ -63,20 +63,25 @@ extern unsigned int vectus[0x3458];
   int cont,nSelecoes, selecionado, ultSelecionado, tamBocal = 0;
   bool selAlterada= false;
   bool sair = true;
-  float ftrScala1 = 0.15679012345679;
-  float ftrScala2 = 0.15;
-  float zero1 = 14; 
-  float zero2 = 0;
+  float ftrScala1 = 0.1557804354;
+  float ftrScala2 = 0.15688696726;
+  float zero1 = 27; 
+  float zero2 = 55;
   int counterCycle = -1;
   float storeReads1 [10] ={};
   float storeReads2 [10] = {};
   float lastPressure, lastFlow = 0;
+  bool inversao = true;
+  int periodo = 10;
+  float valores1 [10] = {};
+  float valores2 [10] = {};
+  bool normalizado = true;
 
+  const unsigned char PS_128 = (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 
-  
   //Estouro do timers
 ISR(TIMER2_OVF_vect){
-  TCNT2=194; //Reinicializa o Timer2
+  TCNT2=225; //Reinicializa o Timer2
     oversampling();     
 }
 ISR(TIMER1_OVF_vect){
@@ -99,7 +104,17 @@ void setup() {
   myGLCD.clrScr();
  //Cor do backgroud padrao de inicialização 
   myGLCD.fillScr(VGA_WHITE);
-    
+  // ***************************************************************************
+  //Configuração conversor ADC
+  //Recomendado trabalhar entre 50kHz a 200kHz
+  //Maior a frequência, menor a precisão e vice-versa.
+  // ***************************************************************************
+  
+  ADCSRA &= ~PS_128;  //limpa configuração da biblioteca do arduino
+  ADCSRA |= PS_128; // 128 prescaler 16Mhhz/128 = 125kHz
+  //ADCSRA |= PS_64; // 64 prescaler 16Mhhz/64 = 250kHz
+  //ADCSRA |= PS_32; // 32 prescaler 16Mhhz/64 = 500kHz
+  //ADCSRA |= PS_16; // 16 prescaler 16Mhhz/64 = 1MHz
   // ***************************************************************************
   //Estouro = timer *prescaler * ciclo de maquina   = =(254-)* 1024 * 59,6E9
   //ciclo de maquina = 1/16MHz = 59,6E9
@@ -402,10 +417,10 @@ void telaCalibracao(){
       myGLCD.setBackColor(VGA_WHITE);
       myGLCD.setColor(VGA_BLACK);
       myGLCD.setFont(BigFont);
-      //myGLCD.print("       ",100, 57);
-      //myGLCD.print("       ",100, 130);
+      myGLCD.print("       ",100, 57);
+      myGLCD.print("       ",100, 130);
       myGLCD.printNumF(pressao(oversampling1, zero1, ftrScala1), 1, 100 , 57,',');
-      myGLCD.printNumF(pressao(oversampling2, zero2, ftrScala2), 1, 100 , 130);
+      myGLCD.printNumF(pressao(oversampling2, zero2, ftrScala2), 1, 100 , 130,',');
 
       if(digitalRead(PIN_ENTER)){
         switch (selecionado)
@@ -593,26 +608,46 @@ void telaManual(){
   }
 }
 void oversampling(){
+  int media = 0;
   // Faz a conversão de 256 amostras do sinal analogico
-  amostragem1 += analogRead(TRANSMISSOR1); 
-  amostragem2 += analogRead(TRANSMISSOR2);
+  if(inversao)amostragem1 += analogRead(TRANSMISSOR1); 
+  if(!inversao)amostragem2 += analogRead(TRANSMISSOR2);
+
   counterAmostragem--;
   
   if(counterAmostragem <= 0){
     // divide as amostras por 16
-    amostragem1 >>= 4;
-    amostragem2 >>= 4;
+    if(inversao)amostragem1 >>= 4;
+    if(!inversao)amostragem2 >>= 4;
     //retira o valor para variavel global
-    oversampling1 = float(amostragem1);
-    oversampling2 = float(amostragem2);
+    if(normalizado){
+      if(inversao)valores1[0] = float(amostragem1);
+      if(!inversao)valores2[0]= float(amostragem2); 
+      for(int i = periodo-1; i >= 1; i--){
+      if(inversao){
+        valores1[i] = valores1[i-1];
+        media += valores1[i];
+      }
+      if(!inversao){
+        valores2[i] = valores2[i-1];     
+        media += valores2[i];
+      }
+    }
+      if(inversao)oversampling1 = media / (periodo-1);
+      if(!inversao)oversampling2 = media / (periodo-1);
+    }else{
+    if(inversao)oversampling1 = float(amostragem1);
+    if(!inversao)oversampling2 = float(amostragem2);
+    }
     counterAmostragem = 256;//reinicia o contador 
     if(counterCycle>=0)counterCycle--;
     if(counterCycle>=0)storeReads1[counterCycle] = oversampling1;
     if(counterCycle>=0)storeReads2[counterCycle] = oversampling2;
     //zera as amostragem
-    amostragem1 = 0; 
-    amostragem2 = 0;
+    if(inversao)amostragem1 = 0; 
+    if(!inversao)amostragem2 = 0;
 
+    inversao = !inversao;
     
     }
 }
