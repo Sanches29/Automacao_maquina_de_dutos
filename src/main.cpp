@@ -161,13 +161,14 @@ void loop() {
   delay(2000); 
   
   EEPROM_readAnything(0, check);
-  if(check == TRUE){
+  if(check == true){
 	  EEPROM_updateAnything(1, ftrScala1);
       EEPROM_updateAnything(5, ftrScala2);
       EEPROM_updateAnything(9, zero1);
       EEPROM_updateAnything(13, zero2);
+	  EEPROM_updateAnything(17, normalizado);
   }
-  else if(check == FALSE){
+  else if(check == false){
 	  myGLCD.fillScr(VGA_WHITE);
       titulos(tituloSup, tituloInf);
 	  
@@ -937,7 +938,14 @@ void newCalibrcao(int num_trasmissor){
             selAlterada= false;
             nSelecoes = 2;
             selecionado= 0;
-            
+			
+            EEPROM_updateAnything(1, ftrScala1);
+            EEPROM_updateAnything(5, ftrScala2);
+            EEPROM_updateAnything(9, zero1);
+            EEPROM_updateAnything(13, zero2);
+			check = true;
+			EEPROM_updateAnything(0, check);
+			
             break;       
           }
         }
