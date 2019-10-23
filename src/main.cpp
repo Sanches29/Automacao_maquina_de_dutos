@@ -157,15 +157,16 @@ void loop() {
   titulos(tituloSup, tituloInf);
   myGLCD.drawBitmap(50,100,200,67,vectus);
   delay(2000); 
+  
+  
+  
+  while (true)
+  {
   myGLCD.fillScr(VGA_WHITE);
   titulos("selecione", tituloInf);
   sair=true;
   selAlterada= false;
-  
   primeiraTela(); 
-  while (true)
-  {
-    
   switch(selecionado){
     case 0:
        //       telaAutomatico();
