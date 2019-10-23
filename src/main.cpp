@@ -574,8 +574,7 @@ void telaManual(){
 
     }while(selAlterada);
     selAlterada=true;
-
-
+    
     myGLCD.setColor(VGA_BLACK);
     myGLCD.drawRoundRect(30, 25, 290, 85);
     myGLCD.setColor(VGA_WHITE);
