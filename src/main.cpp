@@ -156,8 +156,7 @@ void loop() {
   myGLCD.fillScr(VGA_WHITE);
   titulos(tituloSup, tituloInf);
   myGLCD.drawBitmap(50,100,200,67,vectus);
-  delay(2000); 
-  
+  delay(2000);   
   
   while (true)
   {
