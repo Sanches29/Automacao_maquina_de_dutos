@@ -65,19 +65,22 @@ extern unsigned int vectus[0x3458];
   int cont,nSelecoes, selecionado, ultSelecionado, tamBocal = 0;
   bool selAlterada= false;
   bool sair = true;
-  float ftrScala1 = 0.15679012345679;
-  float ftrScala2 = 0.15;
-  float zero1 = 11; 
-  float zero2 = 15;
+  float ftrScala1 = 0.1557804354;
+  float ftrScala2 = 0.15688696726;
+  float zero1 = 27; 
+  float zero2 = 55;
   int counterCycle = -1;
   float storeReads1 [10] ={};
   float storeReads2 [10] = {};
   float lastPressure, lastFlow = 0;
   bool inversao = true;
+  int periodo = 10;
+  float valores1 [10] = {};
+  float valores2 [10] = {};
+  bool normalizado = true;
 
   const unsigned char PS_128 = (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 
-  
   //Estouro do timers
 ISR(TIMER2_OVF_vect){
   TCNT2=225; //Reinicializa o Timer2
@@ -438,10 +441,10 @@ void telaCalibracao(){
       myGLCD.setBackColor(VGA_WHITE);
       myGLCD.setColor(VGA_BLACK);
       myGLCD.setFont(BigFont);
-      //myGLCD.print("       ",100, 57);
-      //myGLCD.print("       ",100, 130);
+      myGLCD.print("       ",100, 57);
+      myGLCD.print("       ",100, 130);
       myGLCD.printNumF(pressao(oversampling1, zero1, ftrScala1), 1, 100 , 57,',');
-      myGLCD.printNumF(pressao(oversampling2, zero2, ftrScala2), 1, 100 , 130);
+      myGLCD.printNumF(pressao(oversampling2, zero2, ftrScala2), 1, 100 , 130,',');
 
       if(digitalRead(PIN_ENTER)){
         switch (selecionado)
@@ -629,6 +632,7 @@ void telaManual(){
   }
 }
 void oversampling(){
+  int media = 0;
   // Faz a conversão de 256 amostras do sinal analogico
   if(inversao)amostragem1 += analogRead(TRANSMISSOR1); 
   if(!inversao)amostragem2 += analogRead(TRANSMISSOR2);
@@ -640,8 +644,25 @@ void oversampling(){
     if(inversao)amostragem1 >>= 4;
     if(!inversao)amostragem2 >>= 4;
     //retira o valor para variavel global
+    if(normalizado){
+      if(inversao)valores1[0] = float(amostragem1);
+      if(!inversao)valores2[0]= float(amostragem2); 
+      for(int i = periodo-1; i >= 1; i--){
+      if(inversao){
+        valores1[i] = valores1[i-1];
+        media += valores1[i];
+      }
+      if(!inversao){
+        valores2[i] = valores2[i-1];     
+        media += valores2[i];
+      }
+    }
+      if(inversao)oversampling1 = media / (periodo-1);
+      if(!inversao)oversampling2 = media / (periodo-1);
+    }else{
     if(inversao)oversampling1 = float(amostragem1);
     if(!inversao)oversampling2 = float(amostragem2);
+    }
     counterAmostragem = 256;//reinicia o contador 
     if(counterCycle>=0)counterCycle--;
     if(counterCycle>=0)storeReads1[counterCycle] = oversampling1;
