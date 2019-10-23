@@ -302,14 +302,18 @@ void primeiraTela(){
 }
 void telaConfiguracoes(){
   myGLCD.fillScr(VGA_WHITE);
-  titulos("selecione", tituloInf);
-  nSelecoes=2;
+  titulos("selecione", "Pressione Zero para voltar");
+  nSelecoes=3;
   selecionado=0;
   sair = true;
   selAlterada= false;
   while (sair)
   {  
     do{
+       if(digitalRead(PIN_VOLTAR)){
+       sair = false;
+       selAlterada = false;
+       }
       if(digitalRead(PIN_ENTER)){
         switch (selecionado)
         {
@@ -318,11 +322,15 @@ void telaConfiguracoes(){
           myGLCD.fillScr(VGA_WHITE);
           sair = true;
           selAlterada= false;
+          titulos("selecione", "Pressione Zero para voltar");
           break;
         case 1:
           /* code */
           break;
         case 2:
+          /* code */
+          break;
+        case 3:
           /* code */
           break;
       
@@ -333,71 +341,87 @@ void telaConfiguracoes(){
     selAlterada= true;
 
     if(selecionado == 0){
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.drawRoundRect(30, 20, 290, 80);
-       myGLCD.setColor(VGA_WHITE);
-       myGLCD.fillRoundRect(31, 21, 289, 79);
-       myGLCD.setBackColor(VGA_WHITE);
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.setFont(BigFont);
-       myGLCD.print("Calibracao", CENTER , 42); 
+      
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.drawRoundRect(40, 40, 150, 110);
+      myGLCD.setColor(VGA_WHITE);
+      myGLCD.fillRoundRect(41, 41, 149, 109);
+      myGLCD.setBackColor(VGA_WHITE);
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.print("Calibracao",55,70);
+    
     }else{
-        myGLCD.setColor(VGA_BLACK);
-       myGLCD.drawRoundRect(30, 20, 290, 80);
-       myGLCD.setColor(VGA_GRAY);
-       myGLCD.fillRoundRect(31, 21, 289, 79);
-       myGLCD.setBackColor(VGA_GRAY);
-       myGLCD.setColor(VGA_WHITE);
-       myGLCD.setFont(BigFont);
-       myGLCD.print("Calibração", CENTER , 42);
-     }
-
-     if(selecionado == 1){
-      
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.drawRoundRect(30, 90, 290, 150);
-       myGLCD.setColor(VGA_WHITE);
-       myGLCD.fillRoundRect(31, 91, 289, 149);
-       myGLCD.setBackColor(VGA_WHITE);
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.setFont(BigFont);
-       myGLCD.print("Medio", CENTER , 112);
-     }else{
-      
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.drawRoundRect(30, 90, 290, 150);
-       myGLCD.setColor(VGA_GRAY);
-       myGLCD.fillRoundRect(31, 91, 289, 149);
-       myGLCD.setBackColor(VGA_GRAY);
-       myGLCD.setColor(VGA_WHITE);
-       myGLCD.setFont(BigFont);
-       myGLCD.print("Medio", CENTER , 112);
   
-       
-     }
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.drawRoundRect(40, 40, 150, 110);
+      myGLCD.setColor(VGA_GRAY);
+      myGLCD.fillRoundRect(41, 41, 149, 109);
+      myGLCD.setBackColor(VGA_GRAY);
+      myGLCD.setColor(255,255,255);
+      myGLCD.print("calibracao",55,70);
+    }
 
-     if(selecionado == 2){
+  if(selecionado==1){
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.drawRoundRect(170, 40, 280, 110);
+      myGLCD.setColor(VGA_WHITE);
+      myGLCD.fillRoundRect(171, 41, 279, 109);
+      myGLCD.setBackColor(VGA_WHITE);
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.print("defininicoes",190,70);
+    }else{
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.drawRoundRect(170, 40, 280, 110);
+      myGLCD.setColor(VGA_GRAY);
+      myGLCD.fillRoundRect(171, 41, 279, 109);
+      myGLCD.setBackColor(VGA_GRAY);
+      myGLCD.setColor(255,255,255);
+      myGLCD.print("definicoes",190,70);
 
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.drawRoundRect(30, 160, 290, 220);
-       myGLCD.setColor(VGA_WHITE);
-       myGLCD.fillRoundRect(31, 161, 289, 219);
-       myGLCD.setBackColor(VGA_WHITE);
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.setFont(BigFont);
-       myGLCD.print("Grande", CENTER , 182); 
+    }
 
-     }else{
-       
-       myGLCD.setColor(VGA_BLACK);
-       myGLCD.drawRoundRect(30, 160, 290, 220);
-       myGLCD.setColor(VGA_GRAY);
-       myGLCD.fillRoundRect(31, 161, 289, 219);
-       myGLCD.setBackColor(VGA_GRAY);
-       myGLCD.setColor(VGA_WHITE);
-       myGLCD.setFont(BigFont);
-       myGLCD.print("Grande", CENTER , 182); 
-     }
+  if(selecionado==2){
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.drawRoundRect(40, 130, 150, 200);
+      myGLCD.setColor(VGA_WHITE);
+      myGLCD.fillRoundRect(41, 131, 149, 199);
+      myGLCD.setBackColor(VGA_WHITE);
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.print("Config.",70,150);
+      myGLCD.print("Bluetooth",60,170);
+    }else{
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.drawRoundRect(40, 130, 150, 200);
+      myGLCD.setColor(VGA_GRAY);
+      myGLCD.fillRoundRect(41, 131, 149, 199);
+      myGLCD.setBackColor(VGA_GRAY);
+      myGLCD.setColor(255,255,255);
+      myGLCD.print("config.",70,150);
+      myGLCD.print("Bluetooth",60,170);
+      
+    }
+  if(selecionado==3){
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.drawRoundRect(170, 130, 280, 200);
+      myGLCD.setColor(VGA_WHITE);
+      myGLCD.fillRoundRect(171, 131, 279, 199);
+      myGLCD.setBackColor(VGA_WHITE);
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.print("padrao de",185,150); 
+      myGLCD.print("fabrica",195,170); 
+    }
+    else{
+      myGLCD.setColor(VGA_BLACK);
+      myGLCD.drawRoundRect(170, 130, 280, 200);
+      myGLCD.setColor(VGA_GRAY);
+      myGLCD.fillRoundRect(171, 131, 279, 199);
+      myGLCD.setBackColor(VGA_GRAY);
+      myGLCD.setColor(255,255,255);
+      myGLCD.print("padrao de",185,150); 
+      myGLCD.print("fabrica",195,170);
+    }
+  
+     
   }
   
 }
