@@ -165,6 +165,10 @@ void loop() {
   sair=true;
   selAlterada= false;
   primeiraTela(); 
+<<<<<<< HEAD
+=======
+  
+>>>>>>> parent of 676a060... repeticao do primeira tela
   switch(selecionado){
     case 0:
        //       telaAutomatico();
@@ -179,7 +183,6 @@ void loop() {
         telaConfiguracoes();
        break;
    }
-  }
   
 }
 
@@ -551,9 +554,9 @@ void telaManual(){
         myGLCD.setBackColor(VGA_WHITE);
         myGLCD.setColor(VGA_BLACK);
         myGLCD.print("       ", 70 , 47);
-        myGLCD.printNumF(pressao(oversampling1,zero1,ftrScala1),1, 70 , 47,',');
+        myGLCD.printNumF(pressao(oversampling1,zero1,ftrScala1),2, 70 , 47);
         myGLCD.print("       ", 70 , 132);
-        myGLCD.printNumF(vazao(oversampling2,zero2,ftrScala2,fatorBocal[tamBocal]),1,70,132,',');
+        myGLCD.printNumF(vazao(oversampling2,zero2,ftrScala2,fatorBocal[tamBocal]),2,70,132);
 
 
 
