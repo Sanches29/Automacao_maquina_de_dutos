@@ -165,10 +165,7 @@ void loop() {
   sair=true;
   selAlterada= false;
   primeiraTela(); 
-<<<<<<< HEAD
-=======
   
->>>>>>> parent of 676a060... repeticao do primeira tela
   switch(selecionado){
     case 0:
        //       telaAutomatico();
