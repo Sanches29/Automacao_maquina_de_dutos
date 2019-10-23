@@ -145,6 +145,7 @@ void loop() {
   sair=true;
   selAlterada= false;
   primeiraTela(); 
+  
   switch(selecionado){
     case 0:
        //       telaAutomatico();
@@ -159,7 +160,6 @@ void loop() {
         telaConfiguracoes();
        break;
    }
-  }
   
 }
 
@@ -497,12 +497,16 @@ void telaManual(){
         myGLCD.setColor(VGA_BLACK);
         myGLCD.print("       ", 70 , 47);
 <<<<<<< HEAD
+<<<<<<< HEAD
         myGLCD.printNumF(pressao(oversampling2, zero, ftrScala1),2, 70 , 47);
 =======
         myGLCD.printNumF(pressao(oversampling1,zero1,ftrScala1),1, 70 , 47,',');
 >>>>>>> develop
+=======
+        myGLCD.printNumF(pressao(oversampling1,zero1,ftrScala1),2, 70 , 47);
+>>>>>>> develop
         myGLCD.print("       ", 70 , 132);
-        myGLCD.printNumF(vazao(oversampling2,zero2,ftrScala2,fatorBocal[tamBocal]),1,70,132,',');
+        myGLCD.printNumF(vazao(oversampling2,zero2,ftrScala2,fatorBocal[tamBocal]),2,70,132);
 
 
 
@@ -521,8 +525,7 @@ void telaManual(){
 
     }while(selAlterada);
     selAlterada=true;
-
-
+    
     myGLCD.setColor(VGA_BLACK);
     myGLCD.drawRoundRect(30, 25, 290, 85);
     myGLCD.setColor(VGA_WHITE);
